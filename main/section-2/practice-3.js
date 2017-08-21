@@ -1,66 +1,19 @@
-'use strict';
-
-function find(collection, ch) {
-    for (let item of collection) {
-        if (item.name === ch) {
-            return item;
-        }
-    }
-
-    return null;
-}
-
-function summarize(collection) {
-    let result = [];
-    for (let item of collection) {
-        let obj = find(result, item)
-        if (obj) {
-            obj.summary++;
-        } else {
-            result.push({name: item, summary: 1});
-        }
-    }
-    return result;
-}
-
-function split(item) {
-    if (item.includes("-")) {
-        let array = item.split("-");
-        return {key: array[0], count: parseInt(array[1], 10)};
-    }
-
-    if (item.includes("[")) {
-        let key = item.charAt(0);
-        let count = parseInt(item.substr(2, item.length - 1));
-        return {key, count};
-    }
-
-    if (item.includes(":")) {
-        let array = item.split(":");
-        return {key: array[0], count: parseInt(array[1], 10)};
-    }
-}
-
-function push(result, key, count) {
-    for (var i = 0; i < count; i++) {
-        result.push(key);
-    }
-}
-
-function expand(collection) {
-    let result = [];
-    for (let item of collection) {
-        if (item.length === 1) {
-            result.push(item);
-        } else {
-            let {key, count} = split(item);
-            push(result, key, count);
-        }
-    }
-    return result;
-}
+;'use strict';
 
 module.exports = function countSameElements(collection) {
-    let expandedArray = expand(collection);
-    return summarize(expandedArray);
-}
+    let result = [];
+    collection.forEach(ele => {
+        let summary = 1;
+        if(ele.length > 1) {
+            summary = Number(ele.match(/\d{1,3}/g)[0]);
+            ele = ele.match(/\w/)[0];
+        }
+        let exist = result.find(item => item.name === ele);
+        if (exist) {
+            exist.summary += summary;
+        } else {
+            result.push({name: ele, summary});
+        }
+    });
+    return result;
+};
